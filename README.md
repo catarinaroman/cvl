@@ -1,4 +1,6 @@
-# Historical Compulsory Voting Laws
+# Compulsory Voting Laws -- Roman, C. PhD Dissertation Project
+
+## Historical Approach
 
 A repository containing an updated manuscript and the replication materials for my 2nd-year research paper on the introduction of compulsory voting laws.
 
