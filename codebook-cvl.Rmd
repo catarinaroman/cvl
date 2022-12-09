@@ -1,0 +1,1074 @@
+---
+title: "Codebook"
+subtitle: "A Historical Dataset on Compulsory Voting Laws in Latin America"
+author: "Catarina Roman"
+date: \today
+fontsize: 12pt
+header-includes:
+    - \usepackage{setspace}\doublespacing
+    - \usepackage{pdflscape}
+    - \newcommand{\blandscape}{\begin{landscape}}
+    - \newcommand{\elandscape}{\end{landscape}}
+margin: 1inch
+output:
+  pdf_document:
+    fig_caption: yes
+    number_sections: yes
+    keep_tex: no
+    toc: yes
+    toc_depth: 3
+    md_extensions: +raw_attribute
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r, echo=FALSE}
+library(tidyverse)
+library(dplyr)
+library(readxl)
+library(texreg)
+library(broom)
+library(MASS)
+library(fixest)
+library(gtsummary)
+library(plm)
+library(lmtest)
+library(sandwich)
+library(kableExtra)
+library(foreign)
+library(haven)
+#install.packages("ggtext")
+library(ggrepel)
+library(ggtext)
+library(forcats)
+library(datasets)
+```
+
+# Introduction
+
+This is a Codebook for the quantitative and qualitative dataset I am building to study the introduction of compulsory voting laws. I start building my dataset using only the Latin American region, but I plan to extend its coverage to the rest of the world.
+
+I group my variables by topics. Variables that originate from other datasets have the sources indicated. Please click on the source name to be redirected to the original online repository containing the data.
+
+Section 6 is the part of this document aimed at fulfilling the assignment for POLI 276 (FA22), and it explains the motivation and reasoning behind my choice of variable and my coding scheme.
+
+This Codebook and all the original and merged datasets are available in [this Github repository](https://github.com/catarinaroman/cvl).
+
+
+# Data Structure
+
+```{r, echo=F}
+latam <- read.csv("list-latam-countries.csv")
+lataml <- as.list(latam)
+```
+
+This is a panel dataset where the unit of analysis is country-year. It ranges between 2015 and 1850, and includes the following countries: `r lataml`.
+
+# Demographic Variables
+
+## Literacy
+
+### literacy
+
+Description: Literacy rate
+
+Source: Compiled by the World Bank, from:
+
+- World Bank, World Development Indicators database, www.worldbank.org
+- Central Intelligence Agency, The World Factbook, www.cia.gov
+- National Center of Education Statistics, National Assessment of Adult Literacy, http://nces.ed.gov/naal/lit_history.asp#illiteracy, accessed April 23, 2013
+- UNESCO, (1953). Progress of Literacy in Various Countries, a preliminary statistical study of available census data since 1900, http://unesdoc.unesco.org/images/0000/000028/002898EB.pdf, accessed April 22, 2013
+- UNESCO, (1957). World Illiteracy at Mid-Century, http://unesdoc.unesco.org/images/0000/000029/002930eo.pdf, accessed April 21, 2013
+- UNESCO, Compendium of statistics on illiteracy, various editions."
+
+Countries available: All in sample
+
+Years available: 1950-2015
+
+
+## Urban Population
+
+### share_pop_urban
+
+Description: Share of total Population in Urban Areas. These data are measured with long intervals (5-10 years) in between. For tractability of the data, I assume linear population growth between measurement periods. Hence, I also rule out missing data issues.
+
+Source: [UN CEPALSTAT](https://statistics.cepal.org/portal/databank/index.html?lang=en&indicator_id=33&area_id=400&members=212%2C146%2C265%2C266%2C29119%2C29123%2C29128%2C29133%2C29138%2C29143%2C29150%2C29155%2C29160%2C29165%2C29170%2C29175%2C29180%2C29185%2C29190%2C29195%2C29200%2C29205%2C29210%2C29215%2C29220%2C32100%2C32105%2C32110%2C32115%2C32120%2C32125%2C32130%2C32135%2C32140%2C32145%2C330
+)
+
+Temporal range: 1955-2015 (available at 5 year intervals)
+
+AND
+
+Source: [International Historical Statistics](https://link.springer.com/referencework/10.1057/978-1-137-30568-8?page=13#toc)
+
+Temporal range: 1750-1950 (available at 10 year intervals)
+
+### grow_urban
+
+Description: Urban Population Growth Rate, avreaged between the years for which urban population is not measured.
+
+Source: Calculated by author from sources above.
+
+Type: Continuous
+
+Countries available: All in sample
+
+Temporal range: 1750-2015 (available at 10 year intervals)
+
+# Economic Variables
+
+## GDP per capita
+
+### gdppc
+
+Source: [Maddison Project Database 2020](https://www.rug.nl/ggdc/historicaldevelopment/maddison/releases/maddison-project-database-2020?lang=en)
+
+Description: Log transformed GDP per capita
+
+Variable Type: Continuous
+
+Countries available: All in sample
+
+# Political Variables
+
+## Democracy
+
+The choice of which Democracy-Autocracy classification to choose is not trivial. Since my analysis dates back to the 1850s, not all of the regime classifications proposed in the literature were available for me to choose from, as the vast majority begins in 1946, or even 1950 (Svolik, and Przeworski \& Limongi respectively, for example). My options are Boix, Miller, and Rosato, and the Polity Project. 
+
+While the Anocracy category in Polity is not very informative, it does nuance the types of governance. What I believed was the potentially problematic feature of the BMR classification was the eligibility to participation criterion. If I were looking at increases in participation as an effect of the law and the introduction of the law being conditional to the regime type, I couldn't have participation as a component in the democracy measurement. However, since the criterion is eligibility to participation, this is not a fruit of concern, since my participation data is not as a share of eligible, but as a share of registered voters. 
+
+The reason why I chose the BMR coding system is that voter eligibility criterion combined with the free and fair elections criteria are actually more informative to the type of dynamic I wish to observe. If, for instance, a government introduces the CVL but does not enfranchise at least half of its adult male population, it is likely instrumentalizing CVL to ensure its permanence in power. If, however, franchise is broadly encompassing and elections are free and fair (there is more than one name on the ballot, no evidence of fraud, and peaceful turnover was possible), the introduction of CVL might indicate that the government is not directly trying to prevent alternation in power.
+
+### democracy
+
+Source: [Boix, Miller, and Rosato (2018)](https://dataverse.harvard.edu/file.xhtml?persistentId=doi:10.7910/DVN/FJLMKT/HY8EIC&version=3.0)
+
+Description: Classification of regime between democratic and non-democratic following the coding rules as pointed out above.
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1800-2015
+
+
+## Leaders
+
+### leader
+
+Source: [Global Leader Ideology Dataset](https://github.com/bastianherre/global-leader-ideologies)
+
+Description: Leader Names
+
+### hog_ideology
+
+Source: [Global Leader Ideology Dataset](https://github.com/bastianherre/global-leader-ideologies)
+
+Description: Economic ideology of the head of government
+
+Variable Type: Categorical
+
+Levels: Left, Center, Right, Other
+
+Countries available: All in sample
+
+Temporal Range available: 1975-2012
+
+### hogideo
+
+I have to complete this dataset for the countries in my sample that it does not yet include, or simply use the data from them 
+
+Source: [Heads of Government Dataset](https://heads-of-government.github.io/index.html)
+
+Description: Economic ideology of the head of government
+
+Variable Type: Categorical
+
+Levels: Left, Center, Right, Other
+
+Countries available: Argentina, Bolivia, Brazil, Chile, Colombia, Costa Rica, Ecuador, Mexico, Paraguay, Peru, Uruguay, Venezuela
+
+Temporal Range available: 1870-2012
+
+### leader_supp_cvl
+
+Source: The author
+
+Description: Answer to the question *Did the leader support the introduction of CVL?*
+
+I code this variable based on whether I could find evidence that the leader himself supported a compulsory voting law or the idea of mandatory voting. Such evidence can be, for example attempting to pass a bill or reform that includes compulsory voting. For example, Manuel Quintana, president of Argentina between 1904 and 1906, attempted to pass an electoral reform which included compulsory voting. However, the legislative was not on board and removed this part of the reform before passing it.\footnote{Compulsory voting was only introduced with the Sáenz Peña Law in 1912.} Thus, I code Quintana as a supporter of CVL (1) for all of his three years in government. Note that this also means that the leader can support CVL but the governing party may be against it. 
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1870-2015
+
+
+## Electoral Integrity and Management
+
+Source: The author
+
+### emb_name
+
+Description: Name of Electoral Management Body
+
+Variable Type: Nominal 
+
+Countries available: All in sample
+
+### emb_creation
+
+Description: Year of Electoral Management Body creation
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+### fraud1
+
+Source: The author
+
+Description: Answer to the question *Was fraud common sense among public opinion?*
+
+I code this variable based on secondary sources, which are mostly in History literature. The entire duration of the government allegedly elected under fraudulent elections is coded as 1. I code clean elections as those that were **perceived** as clean, or that were not overtly and overwhelmingly considered illegitimate.
+
+For example, in Argentina the PAN government was well-known to be rid with fraud and by the end of their stay in power had virtually lost all legitimacy.
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1870-1995
+
+
+### fraud2
+
+Source: Latinobarómetro
+
+Description: Answer to the question *Was fraud common sense among public opinion?*
+
+Fraud in recent elections is harder to assess because historical works have not necessarily developed over contemporary times. I have not yet reached a satisfactory coding scheme for elections after 1995. For now, I use data from the Latinobarómetro as if representative of general perception of the fairness or fraudulence of elections. All waves include a question about election fraud. For instance, the 1995 wave asks the following in question 23: ``Speaking generally, do you think that the elections in this country are clean or rigged?''
+
+Countries available: See Latinobarometro waves.
+
+Temporal Range available: 1995-2015
+
+## Compulsory Voting Law
+
+### cvl_intro
+
+Source: The author
+
+Description: Year in which a country dropped its CVL.
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1800-2012; Complemented to 2015 by the author
+
+
+### cvl_drop
+
+Source: The author
+
+Description: Year in which a country dropped its CVL.
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1800-2012; Completed to 2015 by the author
+
+
+### compulsory
+
+Source: [PIPE Dataset](https://xmarquez.github.io/democracyData/reference/PIPE.html)
+
+Description: Whether a country has a CVL or not.
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1800-2012; Completed to 2015 by the author
+
+
+
+## Compulsory Voting Law Design
+
+### elec_code_name
+
+Source: The author
+
+Description: Number of the law or popular name of electoral legislation.
+
+Observations before the first electoral code are 0, as well as periods in which autocrats took over and the electoral code was suspended.
+
+Variable Type: Nominal
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### elec_code_year
+
+Source: The author
+
+Description: Year in which the active electoral code was approved.
+
+Observations before the first electoral code are 0, as well as periods in which autocrats took over and the electoral code was suspended. Years without elections count as years with active electoral code since incumbents' strategies in office are conditional to the rules of the upcoming election, so I consider that those rules are actively shaping politics even outside of election years.
+
+Variable Type: Nominal
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### share_elec_reform
+
+Source: The author
+
+Description: Share of the national legislature that needs to vote Yes for an electoral code reform to be approved.
+
+Variable Type: Continuous
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+I have barely worked on this variable at all.
+
+
+### sanction
+
+Source: The author
+
+Description: Whether, in a country with CVL, non-voters incur sanctions within that particular design of the law (allows for electoral reforms to change the sanctions)
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### fine
+
+Source: The author
+
+Description: Whether, in a country with a sanction-prescribing CVL, one of the sanctions is a fine
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### fine_value
+
+Source: The author
+
+Description: Value of the fine in a country with a fine-prescribing CVL
+
+Variable Type: Nominal. Currency of the fines not standardized. I have to figure out how to standardize these values. I would likely code them as a share of GDP per capita, but I would first have to convert each of the currencies to the same standard as the World Bank's GDP per capita reports.
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### non_monetary
+
+Source: The author
+
+Description: Whether, in a country with a sanction-prescribing CVL, one of the sanctions is non-monetary
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### non_monetary_desc
+
+Source: The author
+
+Description: Description of the non-monetary sanction in a country with a non-monetary sanction-prescribing CVL
+
+Variable Type: Nominal. Once the dataset is more complete, I need to come up with a categorization for the sanctions, although they all just seem to be posing hurdles to interactions with the government apparatus.
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### enforced
+
+Source: The author
+
+Description: Whether the sanctions prescribed by the CVL are enforced.
+
+Variable Type: Binary. I do not know yet how to measure this variable. I included it here as hopeful thinking, but I have not started to actually work on it.
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+
+## Franchise
+
+Source: [PIPE Dataset](https://xmarquez.github.io/democracyData/reference/PIPE.html)
+
+Descriptions are direct quotes from the PIPE Codebook.
+
+Countries available: All in sample
+
+Temporal Range available: 1800-2012; Completed to 2015 by the author
+
+### f
+
+Description: ``Franchise. Qualifications for the right to vote in national elections. Preliminary notes: To account for exclusions not captured under f, we use the variable oth_exclusions (see below).
+
+There are cases of coexisting qualifications. We handle them as follows:
+
+(1) If the qualifications differ by ethnicity or religion (common in colonies), we code the least restrictive qualification for non-colonizers.
+
+(2) If the qualifications are set at a sub-national level, we code the variable as missing. (Unified countries in which franchise is regulated by sub-units include the United States, Mexico, or South Africa before 1968, while cases of countries that were not yet politically unified include Argentina before 1853, South Africa before 1910, and Australia before 1901). Regulations concerning immigrants and foreign residents are not considered.
+
+Coding of franchise:
+
+missing before suffrage was instituted for the first time.
+
+The codes 0 to 7 are for males only:
+
+0 No legal provisions for suffrage. This code is applied (a) whenever constitutions or other legal acts providing for suffrage were either abrogated without being replaced or formally suspended, (b) if (a) is unclear, whenever the legislature was closed and neither legislative nor presidential elections were held.
+
+1 Estate representation. Example: Sweden until 1866.
+
+2 Property only.
+
+3 (Property OR income OR taxes OR exercise of profession OR educational titles) AND literacy.
+
+4 Property OR income OR taxes OR exercise of profession OR educational titles. This code applies whenever the law specifies a minimum threshold, even if this threshold is very low (for example, tax contribution of three days of local wages in France in 1789, as long as this requirement is observed. If it is not observed, as in post-1917 Mexico, the code is 6.
+
+5 Literacy only OR (Literacy OR property OR income OR taxes OR exercise of profession OR educational titles). 6 All the economically independent (not personal servants, not debtors, only residence requirement). Includes: (a) phrases that explicitly refer to economic independence. Example: "Tener una propiedad, o ejercer cualquiera profesión, o arte con título público, u ocuparse en alguna industria útil, sin sujeción a otro en clase de sirviente o jornalero." (Peru in 1823) (b) phrases such as known means of subsistence, "honest livelihood." Example: "Son ciudadanos todos los habitantes de la Republica naturales de pais o naturalizados en el que fueren casados, o mayores de diez y ocho anos, siempre que exerzan alguna profesion util o tengan medios conocidos de subsistencia." (Costa Rica 1824) (c) phrases that suggest clearly broad qualifications. Example: "Son ciudadanos todos los salvadoreños mayores de veintiún años que sean padres de familia, o cabezas de casa, o que sepan leer y escribir, o que tengan la propiedad que designa la ley." (El Salvador 1841) (d) cases where suffrage is universal but only for free men (i.e., not slaves) (e) cases that fall under 4 without explicit thresholds. Examples: Romania 1866, Peru 1860. The French constitutions of 1795 and 1799 required "une contribution quelquonque." The 1860 Peruvian constitution qualified anyone who could read and write OR paid any taxes OR owned a workshop OR owned some land. The last provision was intended to allow the indigenous population to vote. (f) cases in which franchise is declared to be universal but excludes those who have failed to pay taxes or those permanently receiving public assistance or those under legal bankruptcy.
+
+7 All ("Manhood"). The only exclusions admitted in this category are: (1) having been convicted of a crime (2) being legally incompetent (3) short, less than two-year local residence requirement. There are some cases, however, where the law contains restrictive phrases, such as the requirement of appearing on the tax rolls or having fulfilled military obligation, these restrictions were not enforced. In such cases franchise was coded as 7. An example is the Ottoman Constitution of 1876 (in force after 1908) or the Swedish law until 1975.
+
+For females, we use the second digit, distinguishing only situations in which
+
+0 if no women can vote
+
+1 women are qualified on narrower basis than males Examples: (a) in England between 1918 and 1927 males were qualified at the age of 20, females at 25. (b) in Canada between 1917 and 1920 the vote was given only to relatives of military. (c) in some countries women voted only in some regions. Note that if females vote in municipal elections, we do not include it since the codes refer only to national elections.
+
+2 women are qualified on the same basis as males.
+
+Auxiliary codes: -1 More than one constitution, any other kind of political chaos that makes the electoral rules inoperative. For years of foreign occupation we either set as missing or extend the restriction in effect before the occupation. -2 Family representation (Bhutan). ''
+
+Variable Type: Ordinal
+
+### first_digit
+
+Description: ``The first digit of f.''
+
+Variable Type: Ordinal
+
+### second_digit
+
+Description: ``The second digit of f.''
+
+Variable Type: Ordinal
+
+### franchise_age
+
+Description: ``Age at which those otherwise qualified to vote can exercise this right. Whenever age thresholds are different for different groups, lowest age is coded, unless the group which can vote at an earlier age is very small, say holders of Legion d'Honneur in post-1946 France.''
+
+Variable Type: Ordinal
+
+## Government and Elections
+
+Source: Author coding
+
+The original data upon which these variables are coded come from Dieter Nohlen's Elections in the Americas: A Data Handbook, Volumes 1 and 2 (2005). For elections that took place before Nohlen's coverage, the sources are indicated below, by country. These variables pertain to legislative elections only. Emphasis in national parties in some of the variables is for clarification. In countries where there are regional segments of national parties, the vote and seat counts of the regional segments is not included within the national party's counts, and are thus treated as separate parties.
+
+### parties_run
+
+Description: Number of parties running in a legislative election
+
+Variable Type: Discrete
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### parties_with_seat
+
+Description: Number of parties that received a seat as a result of a legislative election
+
+Variable Type: Discrete
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### ind_seats
+
+Description: Number of independents that received a seat as a result of a legislative election
+
+Variable Type: Discrete
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### 1st_party
+
+Description: Name of the **national** party that received the most votes in a legislative election
+
+Variable Type: Nominal
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### opp_party
+
+Description: Name of the **national** party that received the _second_ most votes in a legislative election
+
+Variable Type: Nominal
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### 1st_party_share_votes
+
+Description: Share of the _votes_ received by the **national** party that received the most votes in a legislative election
+
+Variable Type: Continuous
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### 1st_party_share_seats
+
+Description: Share of the _seats_ in the national legislature received by the **national** party that received the most votes in a legislative election
+
+Variable Type: Continuous
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### opp_party_share_votes
+
+Description: Share of the _votes_ received by the **national** party that received the _second_ most votes in a legislative election
+
+Variable Type: Continuous
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### opp_party_share_seats
+
+Description: Share of the _seats_ in the national legislature received by the **national** party that received the _second_ most votes in a legislative election
+
+Variable Type: Continuous
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### 2nd_party
+
+Description: Name of the **national** party that received the _second_ most _seats_ in a legislative election
+
+Variable Type: Nominal
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### 2nd_party_share_votes
+
+Description: Share of the _votes_ received by the **national** party that received the _second_ most _seats_ in a legislative election
+
+Variable Type: Continuous
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### 2nd_party_share_seats
+
+Description: Share of the _seats_ in the national legislature received by the **national** party that received the _second_ most _seats_ in a legislative election
+
+Variable Type: Continuous
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### inc_supp_cvl
+
+Description: Whether the 1st party supports compulsory voting
+
+Coded based on secondary sources, mostly from Historians, but also from speech and voting records when secondary sources were not available. Hence does not translate directly the roll call voting behavior of the majority of the party's members, but whether the party leadership supported CVL.
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+### opp_supp_cvl
+
+Description: Whether the opposition party supports compulsory voting
+
+Coded based on secondary sources, mostly from Historians, but also from speech and voting records when secondary sources were not available. Hence does not translate directly the roll call voting behavior of the majority of the party's members, but whether the party leadership supported CVL.
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+
+## Participation
+
+### turnout_leg
+
+Source: [PIPE Dataset](https://xmarquez.github.io/democracyData/reference/PIPE.html)
+
+Description: Turnout in legislative elections.
+
+Variable Type: Continuous
+
+Countries available: All in sample
+
+Temporal Range available: 1800-2012; Completed to 2015 by the author
+
+### turnout_pres
+
+Source: [PIPE Dataset](https://xmarquez.github.io/democracyData/reference/PIPE.html)
+
+Description: Turnout in presidential elections.
+
+Variable Type: Continuous
+
+Countries available: All in sample
+
+Temporal Range available: 1800-2012; Completed to 2015 by the author
+
+### legpart_pr
+
+Source: [PIPE Dataset](https://xmarquez.github.io/democracyData/reference/PIPE.html)
+
+Description: Ratio of voters in legislative elections to the total population. Coded only for years of legislative elections. If elections are indirect, only the number of primary voters is used.
+
+Variable Type: Continuous
+
+Countries available: All in sample
+
+Temporal Range available: 1800-2012; Completed to 2015 by the author
+
+### prespart_pr
+
+Source: [PIPE Dataset](https://xmarquez.github.io/democracyData/reference/PIPE.html)
+
+Description: Ratio of voters in presidential elections to the total population. Coded only for years of presidential elections. If elections are indirect, only the number of primary voters is used.
+
+Variable Type: Continuous
+
+Countries available: All in sample
+
+Temporal Range available: 1800-2012; Completed to 2015 by the author
+
+### invalid_votes
+
+Source: Nohlen (2005), Elections in the Americas: A Data Handbook, Volumes 1 and 2
+
+Description: Share of cast votes that were invalid
+
+Variable Type: Continuous
+
+Countries available: All in sample
+
+Temporal Range available: 1850-2015
+
+
+
+## Civil/Political Unrest
+
+Source: [CNTS](https://www.databanksinternational.com/DATA_with_LINKS/)
+
+Direct quote from the CNTS codebook for the relevant variables:
+
+`` While no bibliographic references are utilized in connection with these data, most were initially derived from The New York Times. Every effort has been made in recent years to search the Internet for additional reliable news reports. Since 2011, a link to every news report from which an event is counted can be found in the optional LINKS files.
+    Variable definitions are adopted from Rudolph J. Rummel, "Dimensions of Conflict Behavior Within and Between Nations", General Systems Yearbook, VIII [1963], 1-50.
+     It should be noted that because these data are based on newspaper and on-line news reports, they are somewhat biased geographically and limited in comprehensiveness. Other distortions are attributable to venues not deemed clearly domestic, such, for example, as the Israel-Palestinian conflict. For these and other reasons, the contents of this segment should be used with extreme caution and, in general, only for macroanalytic purposes.''
+
+
+### Domestic2
+
+Description: General Strikes. Any strike of 1,000 or more industrial or service workers that involves more than one employer and that is aimed at national government policies or authority.
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1900-2015
+
+
+### Domestic4
+
+Description: Government Crises. Any rapidly developing situation that threatens to bring the downfall of the present regime - excluding situations of revolt aimed at such overthrow.
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1900-2015
+
+
+### Domestic5
+
+Description: Purges. Any systematic elimination by jailing or execution of political opposition within the ranks of the regime or the opposition.
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1900-2015
+
+### Domestic7
+
+Description: Revolutions. Any illegal or forced change in the top government elite, any attempt at such a change, or any successful or unsuccessful armed rebellion whose aim is independence from the central government.
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1900-2015
+
+### Domestic8
+
+Description: Anti-Government Demonstrations. Any peaceful public gathering of at least 100 people for the primary purpose of displaying or voicing their opposition to government policies or authority, excluding demonstrations of a distinctly anti-foreign nature.
+
+Variable Type: Binary
+
+Countries available: All in sample
+
+Temporal Range available: 1900-2015
+
+
+# Motivation and Reasoning
+
+Out of the 51 variables in this codebook, I build 29. In this section of the Codebook, as part of the POLI 276 assignment, I explain the reason why I collect all of these variables. Overall, my aim is to assess a number of hypotheses to answer the following question: why do some countries adopt CVLs and others do not? To address this question, I acknowledge the role of several different players and attempt to capture them in me choice of coding. Although for this particular exercise I am focusing on Latin America, I do intend to explain the introduction of this law in other countries, and will thus make reference to them in this analysis.
+
+## The Puzzle
+
+The starting point of my empirical exercise has to do with the well-accepted finding that having a CVL generally correlates with higher turnout rates. We may be inclined to directly associate higher participation with better quality of democracy, and thus believe that governments that adopt CVLs wish to make their regimes more democratic. 
+
+```{r, echo=F}
+
+#![Causal Graph](276-diagram.jpeg)
+
+pipe <- read.dta("PIPE_081813.dta")
+pipe2 <- pipe %>% select(countryn, year, f, ext_type, oth_exclusions, franchise_age, turnout_leg, turnout_pres, compulsory, legelec, const_onpaper, gdpcap, first_election, legpart_pr, prespart_pr)
+pipe2$countryn <- tolower(pipe2$countryn)
+
+simple <- read.csv("simple-cvl.csv")
+simple$Country <- tolower(simple$Country)
+simpledrop <- read.csv("simple-drop.csv")
+simpledrop$Country <- tolower(simpledrop$Country)
+
+polity5 <- read_xls("p5v2018.xls")
+polity <- select(polity5, c(country, year, polity2))
+polity$country <- tolower(polity$country)
+
+fulldat <- left_join(pipe2, simple, by = c("year"="cvl_year", "countryn"="Country"))
+fulldat <- left_join(fulldat, simpledrop, by = c("year"="drop_year", "countryn"="Country"))
+countrylist <- as.list(simple$Country)
+fulldat <- fulldat %>% filter(countryn %in% countrylist)
+fulldat <- left_join(fulldat, polity, by = c("year", "countryn"="country"))
+
+bmr <- read.csv("democracy-v3.0.csv")
+bmr$country <- tolower(bmr$country)
+fulldat <- left_join(fulldat, bmr, by = c("year", "countryn"="country"))
+
+fulldat$cvlintro <- ifelse(is.na(fulldat$cvl_intro == T), 0, 1)
+fulldat$cvldrop <- ifelse(is.na(fulldat$cvl_drop == T), 0, 1)
+fulldat <- subset(fulldat, countryn!="nauru")
+fulldat <- subset(fulldat, countryn!="samoa")
+
+
+
+
+fulldat$pol3 <- ifelse(fulldat$polity2 < -5, "A", ifelse(fulldat$polity2>5, "C", "B"))
+fulldat$pol31 <- ifelse(fulldat$pol3=="A", 1, 
+                       ifelse(fulldat$pol3=="B", 2, 
+                              ifelse(fulldat$pol3=="C", 3, NA)))
+
+forplot <- fulldat %>% filter(year>1850)
+forplot$countryn <- str_to_title(forplot$countryn)
+#forplot$yrinto <- ifelse(forplot$cvlintro==1, forplot$year, 0)
+
+  new_forplot <- forplot %>%
+  mutate(orderyear=0) %>%
+  mutate(orderyear =  ifelse(countryn=="Egypt", 1956,
+                      ifelse(countryn=="Costa Rica", 1959,
+                      ifelse(countryn=="Dominican Republic", 1963, 
+                      ifelse(countryn=="Guatemala", 1945,
+                      ifelse(countryn=="Honduras", 1880,
+                      ifelse(countryn=="Mexico", 1857,
+                      ifelse(countryn=="Panama", 1941,
+                      ifelse(countryn=="Argentina", 1912,
+                      ifelse(countryn=="Bolivia", 1956, 
+                      ifelse(countryn=="Brazil", 1932,
+                      ifelse(countryn=="Chile", 1925,
+                      ifelse(countryn=="Ecuador", 1946,
+                      ifelse(countryn=="Paraguay", 1927,
+                      ifelse(countryn=="Peru", 1933,
+                      ifelse(countryn=="Uruguay", 1934,
+                      ifelse(countryn=="Venezuela", 1958,
+                      ifelse(countryn=="Singapore", 1959, 
+                      ifelse(countryn=="Thailand", 1997, 
+                      ifelse(countryn=="Austria", 1929, 
+                      ifelse(countryn=="Belgium", 1892, 
+                      ifelse(countryn=="Bulgaria", 2016, 
+                      ifelse(countryn=="Greece", 1926, 
+                      ifelse(countryn=="Italy", 1945, 
+                      ifelse(countryn=="Netherlands", 1917, 
+                      ifelse(countryn=="Spain", 1907, 
+                      ifelse(countryn=="Switzerland", 1904, 
+                      ifelse(countryn=="Turkey", 1982, 
+                      ifelse(countryn=="Australia", 1924, 
+                      ifelse(countryn=="Fiji", 1992, 
+                      ifelse(countryn=="Samoa", 2019, 
+                      ifelse(countryn=="Nauru", 1965, 
+                      ifelse(countryn=="Cyprus", 1960, 0)
+                      ))))))))))))))))))))))))))))))))
+
+#forplot$countryn <- as.vector(forplot$countryn)
+#forplot$countryn <- factor(forplot$countryn, levels=forplot$countryn[order(forplot$orderyear)])
+
+#mutate(countryn = fct_reorder(countryn, orderyear)) %>%
+
+#arrange(orderyear) %>%
+  #mutate(countryn=factor(countryn, levels=countryn)) %>%
+
+new_forplot$countryn = with(new_forplot, reorder(countryn, orderyear, mean))
+
+new_forplot$countryn <- factor(new_forplot$countryn, levels=c("Samoa",
+"Bulgaria",
+"Thailand",
+"Fiji",
+"Turkey",
+"Nauru",
+"Dominican Republic",
+"Cyprus",
+"Costa Rica",
+"Singapore",
+"Venezuela",
+"Bolivia",
+"Egypt",
+"Ecuador",
+"Guatemala",
+"Italy",
+"Panama",
+"Uruguay",
+"Peru",
+"Brazil",
+"Austria",
+"Paraguay",
+"Greece",
+"Chile",
+"Australia",
+"Luxemburg",
+"Netherlands",
+"Argentina",
+"Spain",
+"Switzerland",
+"Belgium",
+"Honduras",
+"Mexico"))
+
+subforplot <- subset(new_forplot,cvl_intro ==1)
+subdropplot <- subset(new_forplot,cvl_drop ==1)
+new_forplot$pol31 <- as.factor(new_forplot$pol31 )
+
+p <- ggplot(new_forplot, aes(x=countryn,y=year)) + geom_tile(aes(fill = pol31,
+    width = .6))+
+  coord_flip()+
+  scale_color_manual(values = c("#dc837f", "#e7e797", "#7fd7dc"),
+  na.value = "grey50",
+  aesthetics = "fill",
+  name =  "Type of Regime (Polity)",
+  labels = c("Autocracy", "Anocracy", "Democracy")
+) +
+  xlab("Country") +
+  ylab("Year") +
+  theme_minimal() +
+  geom_point(data = subdropplot, mapping = aes(x=countryn,y=year,color = "Abolition of CVL")) +
+  geom_point(data = subforplot, mapping = aes(x=countryn,y=year,color = "Introduction of CVL" )) + scale_color_manual(values=c("#942470", "#245094"), name="")
+
+#p
+
+new_forplot$democracy <- as.factor(new_forplot$democracy )
+
+b <- ggplot(new_forplot, aes(x=countryn,y=year)) + geom_tile(aes(fill = democracy,
+    width = .6))+
+  coord_flip()+
+  scale_color_manual(values = c("#dc837f", "#7fd7dc"),
+  na.value = "grey50",
+  aesthetics = "fill",
+  name =  "Type of Regime (BMR)",
+  labels = c("Autocracy", "Democracy")
+) +
+  xlab("Country") +
+  ylab("Year") +
+  theme_minimal() +
+  geom_point(data = subdropplot, mapping = aes(x=countryn,y=year,color = "Abolition of CVL")) +
+  geom_point(data = subforplot, mapping = aes(x=countryn,y=year,color = "Introduction of CVL" )) + scale_color_manual(values=c("#942470", "#245094"), name="")
+
+b
+
+
+vec <- unique(na.omit(new_forplot$turnout_leg))
+min <- min(vec)
+
+new_forplot$trnt_leg <- ifelse(is.na(new_forplot$turnout_leg), min, new_forplot$turnout_leg)
+
+q <- ggplot(new_forplot, aes(x=countryn,y=year)) + geom_tile(aes(fill = trnt_leg,
+    width = .6))+
+  coord_flip()+
+  scale_fill_gradient2(
+  low = "white",
+  mid = "#e7e797",
+  high = "#7fd7dc",
+  midpoint = median(new_forplot$trnt_leg),
+  space = "Lab",
+  na.value = "white",
+  guide = "colourbar",
+  aesthetics = "fill",
+  name =  "Type of Regime"
+) +
+  xlab("Country") +
+  ylab("Year") +
+  theme_minimal() +
+  geom_point(data = subdropplot, mapping = aes(x=countryn,y=year,color = "Abolition of CVL")) +
+  geom_point(data = subforplot, mapping = aes(x=countryn,y=year,color = "Introduction of CVL" )) + scale_color_manual(values=c("#942470", "#245094"), name="")
+
+#q
+
+```
+
+It depicts all countries that have, at any point, adopted a compulsory voting law -- the year of which is marked by the dark blue dots. The violet dots mark the year in which some of these countries dropped the law -- the rest still has it in place. The colors of the bars represent the regime type across years (1850-2015) according to the dichotomous classification of regimes by Boix, Miller, and Rosato (2018).
+
+
+The choice of which Democracy-Autocracy classification to choose is not trivial. Since my analysis dates back to the 1850s, not all of the regime classifications proposed in the literature were available for me to choose from, as the vast majority begins in 1946, or even 1950 (Svolik, and Przeworski \& Limongi respectively, for example). My options are Boix, Miller, and Rosato, and the Polity Project. Table \ref{tab:regcode} contrasts BMR and Polity classifications.
+
+\newcolumntype{C}{>{\centering\arraybackslash}m{2cm}}
+\begin{table}[ht]
+\centering
+\caption{Comparison of Regime Classifications at the Year of CVL Introduction}
+\begin{tabular}{CCCCCCC}
+  \hline
+BMR/Polity & Dem/Dem & Dem/An & Dem/Aut & Aut/Dem & Aut/An & Aut/Aut \\ 
+  \hline
+Countries & Switzerland, Netherlands, Australia, Greece, Venezuela, Costa Rica, Turkey, Thailand, Bulgaria & Argentina, Chile, Austria, Guatemala, Italy, Ecuador &  & Spain, Cyprus & Mexico, Honduras, Belgium, Paraguay, Brazil, Peru, Uruguay, Panama, Bolivia, Singapore, Dominican Republic, Fiji & Egypt \\ \hline
+Count & 9 & 6 & 0 & 2 & 12 & 1 \\ 
+Share & 30\% & 20\% & 0\% & 7\% & 40\% & 3\% \\ 
+   \hline
+\end{tabular}
+\label{tab:regcode}
+\end{table}
+
+While the Anocracy category in Polity is not very informative, it does nuance the types of governance. What I believed was the potentially problematic feature of the BMR classification was the eligibility to participation criterion. If I were looking at increases in participation as an effect of the law and the introduction of the law being conditional to the regime type, I couldn't have participation as a component in the democracy measurement. However, since the criterion is eligibility to participation, this is not a fruit of concern, since my participation data is not as a share of eligible, but as a share of registered voters. 
+
+The reason why I chose the BMR coding system is that voter eligibility criterion combined with the free and fair elections criteria are actually more informative to the type of dynamic I wish to observe. If, for instance, a government introduces the CVL but does not enfranchise at least half of its adult male population, it is likely instrumentalizing CVL to ensure its permanence in power. If, however, franchise is broadly encompassing and elections are free and fair (there is more than one name on the ballot, no evidence of fraud, and peaceful turnover was possible), the introduction of CVL might indicate that the government is not directly trying to prevent alternation in power.
+
+Table \ref{tab:bmrclass} allows us to visualize the different regimes and transition moments in which each of the countries above adopted compulsory voting laws:
+
+\newcolumntype{L}{>{\centering\arraybackslash}m{3.75cm}}
+\begin{table}[ht]
+\centering
+\caption{Regime and Transition Type at the Moment of CVL Adoption (BMR)}
+\begin{tabular}{LLLL}
+  \hline
+Transition to Autocracy & In Autocracy & Transition to Democracy & In Democracy \\ 
+  \hline
+\textbf{Chile, Uruguay}, Fiji & Mexico, \textbf{Honduras}, Spain, \textbf{Paraguay, Brazil, Peru, Panama, Bolivia}, Egypt, Singapore, Cyprus & Belgium, \textbf{Argentina}, Greece, \textbf{Guatemala}, Italy, \textbf{Ecuador, Venezuela, Dominican Republic}, Turkey & Switzerland, Netherlands, Australia, Austria, \textbf{Costa Rica}, Thailand, Bulgaria \\ 
+   \hline
+\end{tabular}
+\label{tab:bmrclass}
+\end{table}
+
+It comes as a surprise to find that CVLs were, in many cases, introduced in autocratic periods, as the figure below illustrates. How could autocrats benefit from mobilizing its citizens?
+
+There are a number of hypotheses that could explain this pattern. Below I list them and explain how my variables can aid in assessing their strength and validity.
+
+The puzzle is thus that, while we might believe that increased participation via creating disincentives to abstention is a desirable feature in democratic settings, 14 of these 30 countries adopted compulsory voting laws either in the middle of autocratic rule or in a transition to an autocratic state. 
+
+## Assessing Hypotheses
+
+In this subsection I list hypotheses that may explain why states adopt CVL, and present the evidence that I plan on using to assess these claims. These explanations may be complementary, and are not necessarily mutually exclusive. My next steps in this project include formulating narrower, mutually exclusive hypotheses in order to appropriately test them.
+
+My assessment will be based on the following assumptions:
+
+I. Forcing people to vote is costly because it requires a high capacity electoral management body to keep up with who is registered, who turned out, and who did not.  
+II. Forcing people to vote is costly because voting is costly.  
+III. Forcing people to vote may bias elections even more if they are not fair and free.  
+IV. Forcing people to vote is a stronger signal of commitment to give ``power to the people'' than universal suffrage.
+
+### H1: Democracy
+
+Hypothesis 1: States will adopt CVL when incumbents wish to increase the quality of their democracies and suffer from low turnout. 
+
+1A. The incumbents have a democratic agenda.
+
+Some evidence that would support this hypothesis: Speeches in legislative assemblies and party manifestos.
+
+1B. The population demands democratization and the incumbents respond.
+
+Popular mobilization in protests and/or newspapers with an explicit claim for or reporting of increased demand for popular representation.
+
+### H2: Mobilization
+
+States will adopt CVL when majority parties observe declining electoral wish to mobilize its supporters.
+
+Alternative phrasing: States will adopt CVL as elections become more competitive but support for the majority party stays high.
+
+Some evidence that would support this hypothesis: Past turnout rates, absolute turnout, share of votes for the majority party, absolute number of votes for the majority parties.
+
+### H3: Legitimacy
+
+States will adopt CVL when incumbent (majority) parties with decreasing legitimacy wish to legitimize their office through increased participation. This effect should be stronger for autocratic regimes.
+
+3A. Legitimacy is decreasing because of election-day electoral fraud.
+
+Some evidence that would support this hypothesis: Whether elections are fraudulent and whether people are aware of it.
+
+
+3B. Legitimacy is decreasing because the government is limiting the participation of the opposition.
+
+Some evidence that would support this hypothesis: Number of parties running for the legislative and executive, the incumbent party's margin of victory in executive elections across successive elections.
+
+### H4: Democratic capture
+
+States will adopt CVL when autocratic incumbent parties whose polities are increasingly demanding democratization wish to avoid being ousted. 
+
+Some evidence that would support this hypothesis: Popular uprisings against the government, an increasingly strong opposition.
+
+### H5: Informal Disenfranchisement
+
+Opposition parties will lobby for and pass CVLs when incumbents informally disenfranchise opposition supporters who have the right to suffrage. 
+
+Some evidence that would support this hypothesis: Changes in the distribution of voters across party-relevant cleavages such as urban-rural divides.
+
+

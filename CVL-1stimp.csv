@@ -1,0 +1,24 @@
+Country,cvl_ever,cvl_year,year_fem_enf,1st_dem,firstdem_year,firstdem,cvl_lastwithout,cvl_firstwith,dropped,year_fem_enf2,enforced_today,monetary_sanc,nonmon_sanc,cvl_age_min,cvl_age_max,vv_share,desc_monetary_sanc,desc_nonmon_sanc
+Argentina,1,1912,1947,1983,1983,1,,,NA,,0,,,,,,,
+Belize,0,0,1954,NA,NA,NA,NA,NA,NA,,NA,NA,NA,NA,NA,,NA,NA
+Bolivia,1,1952,1952,1982,1982,1,,,NA,1938,1,,,,,,,
+Brazil,1,1932,1932,1985,1985,1,,,NA,,1,,,,,,,
+Chile,1,1925,1949,1964,1964,1,,,2012,1931,1,,,,,,,
+Colombia,0,0,1954,1957,NA,NA,NA,NA,NA,,NA,NA,NA,NA,NA,,NA,NA
+Costa Rica,1,1959,1949,1894,1894,1,,,NA,,0,0,0,,,,NA,NA
+Cuba,0,0,1934,NA,NA,NA,NA,NA,NA,,NA,NA,NA,NA,NA,,NA,NA
+Dominican Republic,1,1963,1942,1996,1996,1,,,2010,,0,,,,,,,
+Ecuador,1,1947,1968,1979,1979,1,,,NA,1929,1,,,,,,,
+El Salvador,0,0,1961,1984,NA,NA,NA,NA,NA,1939,NA,NA,NA,NA,NA,,NA,NA
+Guatemala,1,1945,1946,1996,1996,1,,,1990,,0,0,0,,,,,
+Guyana,0,0,1953,1992,NA,NA,NA,NA,NA,1945,NA,NA,NA,NA,NA,,NA,NA
+Haiti,0,0,1950,1994,NA,NA,NA,NA,NA,,NA,NA,NA,NA,NA,,NA,NA
+Honduras,1,1880,1955,1989,1989,1,,,NA,,0,0,0,,,,,
+Mexico,1,1857,1953,1997,1997,1,,,NA,1947,0,0,0,,,,,
+Nicaragua,0,0,1955,1990,NA,NA,NA,NA,NA,,NA,NA,NA,NA,NA,,NA,NA
+Panama,1,1941,1946,1989,1989,1,,,NA,1941,0,0,0,,,,,
+Paraguay,1,1927,1961,1992,1992,1,,,NA,,0,,,,,,,
+Peru,1,1933,1955,1980,1980,1,,,NA,,1,,,,,,,
+Suriname,0,0,1948,NA,NA,NA,NA,NA,NA,,NA,NA,NA,NA,NA,,NA,NA
+Uruguay,1,1934,1932,1952,1952,1,,,NA,,1,,,,,,,
+Venezuela,1,1958,1946,1958,1958,1,,,1993,,NA,,,,,,,
